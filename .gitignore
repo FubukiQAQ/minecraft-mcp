@@ -1,0 +1,23 @@
+.gradle/
+build/
+run/
+out/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+bin/
+
+node_modules/
+dist/
+*.tsbuildinfo
+
+.cache/
+.DS_Store
+*.log
+
+# WorkBuddy project memory / local assistant data (not part of the code)
+.workbuddy/

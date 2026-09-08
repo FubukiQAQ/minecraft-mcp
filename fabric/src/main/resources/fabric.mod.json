@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "mcpbridge",
+  "version": "${version}",
+  "name": "MCP Bridge",
+  "description": "在 Minecraft 内部架设一座 HTTP 桥，让外部 AI 助手（Claude / Cursor 等）通过 MCP 协议观察并操控游戏世界。",
+  "authors": ["mcpbridge"],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["net.mcpbridge.McpBridgeMod"]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.16",
+    "minecraft": "1.21.x",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

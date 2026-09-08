@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "minecraft": {
+      "command": "node",
+      "args": [
+        "D:/mc2p/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "MCPBRIDGE_URL": "http://127.0.0.1:8765",
+        "MCPBRIDGE_TOKEN": "在这里粘贴 config/mcpbridge.token 的内容"
+      }
+    }
+  }
+}
