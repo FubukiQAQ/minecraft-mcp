@@ -45,19 +45,6 @@ Claude: "把脚下的方块换成石头"
 
 ---
 
-## 为什么这样设计
-
-**1. 为什么模组内嵌 HTTP，而不是让 AI 直接连游戏？**  
-Minecraft 不是为长连接设计的。把 HTTP 服务放在模组里，AI 侧就退化成一个普通 HTTP 客户端——可以用任何语言写，可以随便重启，游戏崩了 AI 也不会崩。
-
-**2. 为什么要拆出独立的 MCP 服务器？**  
-MCP 协议与游戏版本各自演进。分成两个进程后，升级 MCP SDK 不用碰 Java，换 MC 版本不用碰 TypeScript。
-
-**3. 为什么所有操作都要走主线程？**  
-Minecraft 的世界状态几乎没有任何并发保护。任何来自 HTTP 线程的读写都可能在任意时刻与游戏刻（tick）交错，导致偶发的世界损坏——这类 bug 极难复现。本项目用 `ThreadBridge` 把所有执行体统一投递到主线程，并带超时保护。
-
----
-
 ## 快速开始
 
 ### 1. 构建并安装模组
@@ -67,8 +54,8 @@ cd fabric
 ./gradlew build          # Windows 用 gradlew.bat
 ```
 
-> wrapper 默认从腾讯镜像拉取 Gradle（官方源在国内实测只有 ~18KB/s）。  
-> 需要官方源的话改 `fabric/gradle/wrapper/gradle-wrapper.properties` 里的 `distributionUrl` 即可。
+> wrapper 默认从腾讯镜像拉取 Gradle。  
+> 需要官方源的话修改 `fabric/gradle/wrapper/gradle-wrapper.properties` 里的 `distributionUrl` 即可。
 
 产物在 `fabric/build/libs/mcpbridge-0.1.0.jar`，丢进 `.minecraft/mods/`（同时需要 [Fabric Loader](https://fabricmc.net/) 与 Fabric API）。
 
@@ -83,7 +70,8 @@ cd fabric
 [mcpbridge] 令牌：3f9a...（64 位十六进制）
 ```
 
-令牌同时写入 `config/mcpbridge.token`，配置文件在 `config/mcpbridge.json`。
+令牌同时写入 `.minecraft/(version)/(版本名)/config/mcpbridge.token`，配置文件在 `.minecraft/(version)/(版本名)/config/mcpbridge.json`。
+括号中的内容表示开启了版本隔离后的路径变化。
 
 ### 3. 启动 MCP 服务器
 
@@ -297,9 +285,8 @@ AI 很容易"随手"发出会卡死游戏的请求，所以每个可能放大的
 
 当前目标版本是 **1.21.1**（Fabric Loader 0.19.5 / Fabric API 0.116.17 / Yarn 1.21.1+build.3 / JDK 21）。
 
-要支持多个 MC 版本，推荐用 [Stonecutter](https://stonecutter.kikugie.dev/)：把 `gradle.properties` 里的版本号换成版本矩阵，用 `//? if >=1.21.2 {` 之类的注释处理少数 API 差异。本项目的代码按"每个方法一个小闭包"组织，正是为了让这类条件编译的粒度足够细。
+要支持多个 MC 版本，推荐用 [Stonecutter](https://stonecutter.kikugie.dev/)：把 `gradle.properties` 里的版本号换成版本矩阵，用 `//? if >=1.21.2 {` 之类的注释处理少数 API 差异。
 
-换版本时最容易踩的坑是**映射名变更**——建议先把 `yarn` 版本改好，用编译器报错逐个修正。
 
 ---
 
