@@ -2,12 +2,14 @@
 
 一座架在 Minecraft 内部的桥：让 Claude Desktop、Cursor 这类外部 AI 助手，通过标准 MCP 协议**观察、理解并操控游戏世界**。
 
-项目由两部分组成：
+仓库布局：
 
 | 部分        | 位置            | 职责                                                    |
 | --------- | ------------- | ----------------------------------------------------- |
 | Fabric 模组 | `fabric/`     | 在 MC 内部起一个本地 HTTP 服务，把所有操作安全调度到游戏主线程                  |
 | MCP 服务器   | `mcp-server/` | TypeScript 实现的 MCP server，把 AI 的工具调用翻译成对游戏内 HTTP 桥的请求 |
+| 客户端示例   | `examples/`   | Claude Desktop 等客户端的 MCP 配置样例                                  |
+| 调试工具    | `tools/`      | 直连游戏内 HTTP 桥的命令行脚本（不经过 MCP server）                          |
 
 
 
@@ -98,6 +100,8 @@ export MCPBRIDGE_TOKEN=<你的令牌>
 node dist/index.js
 ```
 
+> PowerShell 下用 `$env:MCPBRIDGE_TOKEN="<你的令牌>"` 代替 `export`。更多配置项见 `mcp-server/README.md`。
+
 ### 4. 接入 AI 客户端
 
 `examples/claude_desktop_config.json` 是一份可直接改用的配置：
@@ -107,7 +111,7 @@ node dist/index.js
   "mcpServers": {
     "minecraft": {
       "command": "node",
-      "args": ["D:/mc2p/mcp-server/dist/index.js"],
+      "args": ["<本仓库路径>/mcp-server/dist/index.js"],
       "env": {
         "MCPBRIDGE_URL": "http://127.0.0.1:8765",
         "MCPBRIDGE_TOKEN": "把令牌填在这里"
@@ -124,6 +128,15 @@ curl http://127.0.0.1:8765/health
 ```
 
 返回 `{"status":"ok","worldReady":true,...}` 说明桥和世界都就绪了。
+
+不想启动 MCP server 时，也可以用 `tools/call.mjs` 直连桥调试：
+
+```bash
+export MCPBRIDGE_TOKEN=<你的令牌>
+node tools/call.mjs ping
+node tools/call.mjs get_player
+node tools/call.mjs set_block '{"x":0,"y":64,"z":0,"block":"minecraft:stone"}'
+```
 
 ---
 
@@ -300,6 +313,12 @@ AI 很容易"随手"发出会卡死游戏的请求，所以每个可能放大的
 | `-32001 主线程执行超时` | 请求范围太大或世界卡顿。缩小范围，或调大 `requestTimeoutMs`                     |
 | `-32011 权限等级不足`  | 把 `permissionLevel` 调高，或改用低权限等级的替代方法                        |
 | AI 说找不到工具        | MCP 服务器没重启，或 `claude_desktop_config.json` 里的路径写错            |
+
+---
+
+## 开发与贡献
+
+给 AI Agent 或协作者的开发说明放在 `AGENTS.md`：包含构建命令、两侧一致性约定、新增工具的步骤和已知坑，动手前先读它。
 
 ---
 
