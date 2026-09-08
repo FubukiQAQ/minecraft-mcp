@@ -6,7 +6,7 @@
 
 MCP Bridge：让外部 AI（Claude Desktop / Cursor 等）通过 MCP 协议观察并操控 Minecraft 世界。
 
-- `fabric/`：Fabric 模组（Java，MC 1.21.1），游戏内起本地 HTTP 桥，所有操作调度到主线程。
+- `fabric/`：Fabric 模组（Java，MC 1.20.1），游戏内起本地 HTTP 桥，所有操作调度到主线程。
 - `mcp-server/`：TypeScript MCP 服务器，把 MCP 工具调用翻译成对桥的 JSON-RPC 2.0 请求。
 
 ## 构建
@@ -43,8 +43,8 @@ cd mcp-server && npm run typecheck    # TS 侧类型检查
 ## 已知坑
 
 - **Yarn 映射名**：不确定 API 时先用 `tools/maptool.mjs` 查 `mappings.tiny`（下载方式见文件头注释），不要凭印象写方法名。
-- **Fabric API 事件签名**：以 `javap` 反编译 jar-in-jar 内的实际接口为准，例如 1.21.1 的聊天事件参数。
-- **本机 JDK**：`C:\Program Files\Java` 下有 JDK 21；`gradle.properties` 已固定路径，PATH 上默认没有 `javap`。
+- **Fabric API 事件签名**：以 `javap` 反编译 jar-in-jar 内的实际接口为准，例如 1.20.1 的聊天事件参数。
+- **本机 JDK**：`C:\Program Files\Java` 下有 JDK 21；构建用它、产物按 Java 17 编译；`gradle.properties` 已固定路径，PATH 上默认没有 `javap`。
 - **Gradle 下载慢**：wrapper 指向腾讯镜像（`mirrors.cloud.tencent.com`），官方源很慢；需要时改 `distributionUrl`。
 - **单人世界 vs 专用服务端**：客户端兜底走反射；纯客户端连远程服务器时只能做客户端能做的事。
 - **原版命令代替直接调 API**：`set_time` / `set_weather` / `send_chat` 通过派发原版命令实现，避开版本间 API 差异，改动要小心。

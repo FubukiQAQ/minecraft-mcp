@@ -56,8 +56,6 @@ public final class ReadMethods {
                     MinecraftServer server = GameContext.requireServer();
                     JsonObject j = new JsonObject();
                     j.addProperty("tick", server.getTicks());
-                    j.addProperty("averageTickMs", round(server.getAverageTickTime()));
-                    j.addProperty("averageNanosPerTick", round(server.getAverageNanosPerTick()));
                     j.addProperty("players", server.getPlayerManager().getPlayerList().size());
                     j.addProperty("maxPlayers", server.getPlayerManager().getMaxPlayerCount());
                     j.addProperty("dedicated", server.isDedicated());

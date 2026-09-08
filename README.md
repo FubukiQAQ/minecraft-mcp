@@ -283,9 +283,9 @@ AI 很容易"随手"发出会卡死游戏的请求，所以每个可能放大的
 
 ## 多版本 Minecraft
 
-当前目标版本是 **1.21.1**（Fabric Loader 0.19.5 / Fabric API 0.116.17 / Yarn 1.21.1+build.3 / JDK 21）。
+当前目标版本是 **1.20.1**（Fabric Loader 0.15.11 / Fabric API 0.92.12+1.20.1 / Yarn 1.20.1+build.10 / Java 17 目标、JDK 21 构建）。
 
-要支持多个 MC 版本，推荐用 [Stonecutter](https://stonecutter.kikugie.dev/)：把 `gradle.properties` 里的版本号换成版本矩阵，用 `//? if >=1.21.2 {` 之类的注释处理少数 API 差异。
+要支持多个 MC 版本，推荐用 [Stonecutter](https://stonecutter.kikugie.dev/)：把 `gradle.properties` 里的版本号换成版本矩阵，用 `//? if >=1.21 {` 之类的注释处理少数 API 差异。
 
 
 ---

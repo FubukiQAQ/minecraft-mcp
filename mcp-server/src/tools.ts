@@ -28,7 +28,7 @@ export const TOOLS: ToolDef[] = [
     name: "get_world_info",
     title: "世界概览",
     description:
-      "获取服务器与全部维度的概览：tick、性能、在线人数、难度，以及每个维度的时间、天气、出生点。",
+      "获取服务器与全部维度的概览：tick、在线人数、难度，以及每个维度的时间、天气、出生点。",
     input: {},
     permission: "read",
   },
