@@ -1,0 +1,33 @@
+{
+  "mcpbridge.menuButton": "MCP Bridge 设置",
+  "mcpbridge.title": "MCP Bridge 设置",
+  "mcpbridge.status": "桥状态：%s",
+
+  "mcpbridge.cat.network": "—— 网络（改动会重启 HTTP 桥）——",
+  "mcpbridge.cat.security": "—— 安全 ——",
+  "mcpbridge.cat.limits": "—— 性能护栏 ——",
+  "mcpbridge.cat.events": "—— 事件 ——",
+
+  "mcpbridge.opt.enabled": "启用 HTTP 桥",
+  "mcpbridge.opt.bindAddress": "绑定地址",
+  "mcpbridge.opt.port": "端口（0=自动）",
+  "mcpbridge.opt.allowRemoteBinding": "允许绑定非回环地址",
+  "mcpbridge.opt.permissionLevel": "授权等级",
+  "mcpbridge.opt.token": "令牌",
+  "mcpbridge.opt.commandMode": "命令模式",
+  "mcpbridge.opt.commandDenylist": "命令黑名单（逗号分隔）",
+  "mcpbridge.opt.commandAllowlist": "命令白名单（逗号分隔）",
+  "mcpbridge.opt.requestTimeoutMs": "请求超时（毫秒）",
+  "mcpbridge.opt.maxScanVolume": "最大扫描体积",
+  "mcpbridge.opt.maxFillVolume": "最大填充体积",
+  "mcpbridge.opt.maxRaycastDistance": "最大射线距离",
+  "mcpbridge.opt.maxEntitiesReturned": "单次最多返回实体数",
+  "mcpbridge.opt.eventLog": "记录游戏事件",
+  "mcpbridge.opt.eventLogSize": "事件缓冲条数",
+  "mcpbridge.opt.logMobDeaths": "记录生物死亡",
+
+  "mcpbridge.action.reset": "恢复默认",
+  "mcpbridge.action.save": "保存并应用",
+  "mcpbridge.action.regenerate": "生成",
+  "mcpbridge.action.copy": "复制"
+}

@@ -33,6 +33,17 @@ cd mcp-server && npm run typecheck    # TS 侧类型检查
 2. TS 侧：在 `mcp-server/src/tools.ts` 的 `TOOLS` 里加同名 `ToolDef`。
 3. 重建两侧；用 `list_methods` 拉取模组侧真实 schema 核对一致性。
 
+## 游戏内配置界面（仅客户端）
+
+- 入口是 `fabric.mod.json` 的 `client` entrypoint `net.mcpbridge.client.McpBridgeClient`：借 Fabric 的
+  `ScreenEvents.AFTER_INIT` 给 `GameMenuScreen` 追加按钮，**没有用 mixin**；按钮位置按已有按钮的包围盒算，
+  MC 小版本改布局也不会直接崩。
+- 客户端相关类全部放在 `net.mcpbridge.client` 包下，`fabric.mod.json` 保持 `environment: "*"`，
+  靠 client entrypoint 的懒加载保证专用服务端不会去加载客户端类。
+- 配置改完要即时生效：`ModConfig.copyFrom()` 是**就地写**（`BridgeHttpServer` 持有单例引用，不能换对象）；
+  非网络类配置调 `ModConfig.applyRuntime()`，端口 / 绑定地址 / enabled 调 `McpBridgeMod.applyNetworkConfig()` 重启桥。
+- 新增配置项时三处同步：`ModConfig` 字段 + `normalize()` 的区间、`ConfigScreen.buildRows()`、`assets/mcpbridge/lang/*.json`。
+
 ## 调试
 
 - 直连桥：`node tools/call.mjs <method> [paramsJson]`，需要 `MCPBRIDGE_TOKEN` 或 `MCPBRIDGE_GAME_DIR`。

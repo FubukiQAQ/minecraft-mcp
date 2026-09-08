@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.mcpbridge.api.Permission;
+import net.mcpbridge.core.EventLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,6 +87,7 @@ public final class ModConfig {
             cfg.token = generateToken();
         }
         cfg.file = file;
+        cfg.normalize();
         cfg.save();
         INSTANCE = cfg;
         cfg.writeTokenFile();
@@ -101,6 +105,93 @@ public final class ModConfig {
 
     public Permission permission() {
         return Permission.parse(permissionLevel);
+    }
+
+    // ------------------------------------------------------------------ 运行时改配置
+
+    /** 深拷贝一份草稿，供配置界面编辑；点"取消"时直接丢弃，不影响运行中的实例。 */
+    public ModConfig copy() {
+        ModConfig draft = GSON.fromJson(GSON.toJson(this), ModConfig.class);
+        if (draft == null) {
+            draft = new ModConfig();
+        }
+        draft.file = this.file;
+        return draft;
+    }
+
+    /**
+     * 把 other 的字段就地写入 this。
+     *
+     * 必须就地写：{@link net.mcpbridge.http.BridgeHttpServer} 持有本对象的引用，
+     * 直接替换单例会让桥继续读旧配置。用反射遍历字段是为了以后新增配置项不用改这里。
+     */
+    public void copyFrom(ModConfig other) {
+        for (Field field : ModConfig.class.getDeclaredFields()) {
+            int mods = field.getModifiers();
+            if (Modifier.isStatic(mods) || Modifier.isTransient(mods) || field.isSynthetic()) {
+                continue;
+            }
+            try {
+                field.setAccessible(true);
+                field.set(this, field.get(other));
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                LOGGER.warn("[mcpbridge] 配置字段 {} 写入失败：{}", field.getName(), e.getMessage());
+            }
+        }
+        normalize();
+    }
+
+    /** 把界面里填的值收进合法区间，避免手改文件或乱填把桥搞崩。 */
+    public void normalize() {
+        token = token == null ? "" : token.trim();
+        permissionLevel = switch (Permission.parse(permissionLevel)) {
+            case READ -> "read";
+            case BUILD -> "build";
+            case ADMIN -> "admin";
+        };
+        String mode = commandMode == null ? "denylist" : commandMode.trim().toLowerCase();
+        commandMode = switch (mode) {
+            case "off" -> "off";
+            case "allowlist" -> "allowlist";
+            default -> "denylist";
+        };
+        if (commandDenylist == null) {
+            commandDenylist = new ArrayList<>();
+        }
+        if (commandAllowlist == null) {
+            commandAllowlist = new ArrayList<>();
+        }
+        bindAddress = bindAddress == null || bindAddress.isBlank() ? "127.0.0.1" : bindAddress.trim();
+        port = clamp(port, 0, 65535);
+        requestTimeoutMs = clamp(requestTimeoutMs, 100, 120_000);
+        maxScanVolume = clamp(maxScanVolume, 1_000, 5_000_000);
+        maxFillVolume = clamp(maxFillVolume, 1, 1_000_000);
+        maxRaycastDistance = clamp(maxRaycastDistance, 1, 512);
+        maxEntitiesReturned = clamp(maxEntitiesReturned, 1, 2_000);
+        eventLogSize = clamp(eventLogSize, 16, 10_000);
+    }
+
+    /**
+     * 让非网络类配置立刻生效。
+     *
+     * 权限、命令策略、护栏、事件缓冲都是每次请求 / 每次事件现场读的，改了就生效；
+     * 只有 EventLog 的容量需要重新下发一次。端口、绑定地址、enabled 这类要重启 HTTP 桥，
+     * 见 {@link net.mcpbridge.McpBridgeMod#applyNetworkConfig()}。
+     */
+    public void applyRuntime() {
+        normalize();
+        EventLog.configure(eventLog, eventLogSize);
+        save();
+        writeTokenFile();
+    }
+
+    /** 生成一枚新令牌，不改动当前实例（配置界面「生成」按钮用）。 */
+    public static String newToken() {
+        return generateToken();
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private void writeTokenFile() {

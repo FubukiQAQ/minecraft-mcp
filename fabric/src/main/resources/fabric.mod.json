@@ -9,7 +9,8 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": ["net.mcpbridge.McpBridgeMod"]
+    "main": ["net.mcpbridge.McpBridgeMod"],
+    "client": ["net.mcpbridge.client.McpBridgeClient"]
   },
   "mixins": [],
   "depends": {

@@ -1,0 +1,33 @@
+{
+  "mcpbridge.menuButton": "MCP Bridge Settings",
+  "mcpbridge.title": "MCP Bridge Settings",
+  "mcpbridge.status": "Bridge: %s",
+
+  "mcpbridge.cat.network": "-- Network (changes restart the HTTP bridge) --",
+  "mcpbridge.cat.security": "-- Security --",
+  "mcpbridge.cat.limits": "-- Performance limits --",
+  "mcpbridge.cat.events": "-- Events --",
+
+  "mcpbridge.opt.enabled": "Enable HTTP bridge",
+  "mcpbridge.opt.bindAddress": "Bind address",
+  "mcpbridge.opt.port": "Port (0 = auto)",
+  "mcpbridge.opt.allowRemoteBinding": "Allow non-loopback binding",
+  "mcpbridge.opt.permissionLevel": "Permission level",
+  "mcpbridge.opt.token": "Token",
+  "mcpbridge.opt.commandMode": "Command mode",
+  "mcpbridge.opt.commandDenylist": "Command denylist (comma separated)",
+  "mcpbridge.opt.commandAllowlist": "Command allowlist (comma separated)",
+  "mcpbridge.opt.requestTimeoutMs": "Request timeout (ms)",
+  "mcpbridge.opt.maxScanVolume": "Max scan volume",
+  "mcpbridge.opt.maxFillVolume": "Max fill volume",
+  "mcpbridge.opt.maxRaycastDistance": "Max raycast distance",
+  "mcpbridge.opt.maxEntitiesReturned": "Max entities returned",
+  "mcpbridge.opt.eventLog": "Log game events",
+  "mcpbridge.opt.eventLogSize": "Event buffer size",
+  "mcpbridge.opt.logMobDeaths": "Log mob deaths",
+
+  "mcpbridge.action.reset": "Reset",
+  "mcpbridge.action.save": "Save & Apply",
+  "mcpbridge.action.regenerate": "New",
+  "mcpbridge.action.copy": "Copy"
+}

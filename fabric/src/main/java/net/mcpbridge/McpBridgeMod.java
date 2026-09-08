@@ -23,6 +23,7 @@ public final class McpBridgeMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     private static BridgeHttpServer http;
+    private static volatile String httpStatus = "未启动";
 
     @Override
     public void onInitialize() {
@@ -47,15 +48,36 @@ public final class McpBridgeMod implements ModInitializer {
             ThreadBridge.setServer(null);
         });
 
+        startHttp(cfg);
+    }
+
+    /** 一行人类可读的桥状态，配置界面直接展示。 */
+    public static String httpStatus() {
+        return httpStatus;
+    }
+
+    /**
+     * 应用新的网络配置：停掉旧桥再按新配置拉起。
+     *
+     * 其余配置（权限、命令策略、护栏、事件缓冲）都是每次请求现场读取的，
+     * 由 {@link ModConfig#applyRuntime()} 直接生效，不需要重启。
+     */
+    public static void applyNetworkConfig() {
+        stopHttp();
+        startHttp(ModConfig.get());
+    }
+
+    private static void startHttp(ModConfig cfg) {
         if (!cfg.enabled) {
+            httpStatus = "已停用（enabled=false）";
             LOGGER.warn("[mcpbridge] 配置中 enabled=false，未启动 HTTP 桥。");
             return;
         }
-
         try {
             http = new BridgeHttpServer(cfg);
             int port = http.start();
-            LOGGER.info("[mcpbridge] HTTP 桥已启动：http://{}:{}/rpc", cfg.bindAddress, port);
+            httpStatus = "http://" + cfg.bindAddress + ":" + port + "/rpc";
+            LOGGER.info("[mcpbridge] HTTP 桥已启动：{}", httpStatus);
             LOGGER.info("[mcpbridge] 当前授权等级：{}（read / build / admin 之一）", cfg.permissionLevel);
             LOGGER.info("[mcpbridge] 令牌：{}", cfg.token);
             LOGGER.info("[mcpbridge] 令牌文件：config/mcpbridge.token，请交给 MCP server 使用。");
@@ -63,14 +85,21 @@ public final class McpBridgeMod implements ModInitializer {
                 LOGGER.warn("[mcpbridge] 警告：已开启非回环地址绑定，请确保令牌足够强且处于可信网络！");
             }
         } catch (IOException e) {
+            http = null;
+            httpStatus = "启动失败：" + e.getMessage();
             LOGGER.error("[mcpbridge] HTTP 桥启动失败：{}", e.getMessage());
         }
     }
 
-    public static void shutdown() {
+    private static void stopHttp() {
         if (http != null) {
             http.stop();
             http = null;
         }
+        httpStatus = "未启动";
+    }
+
+    public static void shutdown() {
+        stopHttp();
     }
 }
