@@ -8,6 +8,8 @@ out/
 *.iml
 *.ipr
 *.iws
+*.png
+*.py
 .vscode/
 bin/
 
