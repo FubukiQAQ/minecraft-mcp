@@ -44,6 +44,10 @@ Claude: "把脚下的方块换成石头"
 ```
 
 ---
+## 使用演示
+https://www.bilibili.com/video/BV1TwYJ6JENZ
+
+---
 
 ## 快速开始
 
